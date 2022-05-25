@@ -7,24 +7,44 @@ using Terraria.DataStructures;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 using Utils = JEMusicAndPylon.Common.Utils;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace JEMusicAndPylon.Tiles.Abstract
 {
     public abstract class PylonTile<MI, MT> : ModTile where MI : ModItem where MT : ModTile
     {
         private readonly string _biome = Utils.SplitCamelCase(typeof(MT).Name)[0];
+        private readonly int _animationFrame = 54;
         public override void SetDefaults()
         {
             Main.tileFrameImportant[Type] = true;
-            TileObjectData.newTile.CopyFrom(TileObjectData.Style2x2);
-            TileObjectData.newTile.Origin = new Point16(0, 1);
+            TileObjectData.newTile.CopyFrom(TileObjectData.Style3x4);
+            TileObjectData.newTile.Origin = new Point16(1, 3);
             TileObjectData.newTile.LavaDeath = false;
-            TileObjectData.newTile.DrawYOffset = 2;
+            // TileObjectData.newTile.DrawYOffset = 2;
             TileObjectData.addTile(Type);
             disableSmartCursor = true;
             ModTranslation name = CreateMapEntryName(null);
             name.SetDefault(_biome + " Pylon");
             AddMapEntry(new Color(200, 180, 100));
+        }
+
+        public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)
+        {
+            SpriteEffects effects = SpriteEffects.None;
+            Texture2D texture = ModContent.GetTexture("JEMusicAndPylon/Tiles/" + typeof(MT).Name);
+            Tile tile = Main.tile[i, j];
+            Vector2 zero = new Vector2(Main.offScreenRange, Main.offScreenRange);
+            if (Main.drawToScreen)
+            {
+                zero = Vector2.Zero;
+            }
+            Main.spriteBatch.Draw(
+                texture,
+                new Vector2(i * 16 - (int)Main.screenPosition.X, j * 16 - (int)Main.screenPosition.Y) + zero,
+                new Rectangle(tile.frameX, tile.frameY, 16, 16),
+                Lighting.GetColor(i, j), 0f, default(Vector2), 1f, effects, 0f);
+            return false;
         }
 
         public override void KillMultiTile(int i, int j, int frameX, int frameY)

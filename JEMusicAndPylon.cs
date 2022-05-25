@@ -31,6 +31,8 @@ namespace JEMusicAndPylon
         private Random _rand = new Random();
         private double _randomDouble;
 
+        private string _mainMenuSong = "Sounds/Music/60_Alternate_Main_Menu";
+
         public JEMusicAndPylon()
         {
             Instance = this;
@@ -45,7 +47,7 @@ namespace JEMusicAndPylon
                     music = 6;
                 }
                 _customTitleMusicSlot = 6;
-                Music music2 = GetMusic("Sounds/Music/51_Main_Menu");
+                Music music2 = GetMusic(_mainMenuSong);
                 if (music2.IsPlaying)
                 {
                     music2.Stop(0);
@@ -85,7 +87,7 @@ namespace JEMusicAndPylon
         {
             try
             {
-                int soundSlot = GetSoundSlot(SoundType.Music, "Sounds/Music/51_Main_Menu");
+                int soundSlot = GetSoundSlot(SoundType.Music, _mainMenuSong);
                 if (Main.music.IndexInRange(soundSlot))
                 {
                     Music obj = Main.music[soundSlot];
@@ -233,7 +235,7 @@ namespace JEMusicAndPylon
 
         private void SetTitleMusic()
         {
-            _customTitleMusicSlot = GetSoundSlot(SoundType.Music, "Sounds/Music/51_Main_Menu");
+            _customTitleMusicSlot = GetSoundSlot(SoundType.Music, _mainMenuSong);
             ILTerraria.Main.UpdateAudio += TitleMusicIL;
         }
 

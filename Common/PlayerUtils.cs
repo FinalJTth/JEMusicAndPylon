@@ -45,8 +45,6 @@ namespace JEMusicAndPylon.Common
     {
         public static Zone GetPlayerZone(Player player)
         {
-            if (player.ZoneBeach)
-                return Zone.Ocean;
             if (player.ZoneCorrupt && player.ZoneDirtLayerHeight)
                 return Zone.CorruptionDirt;
             if (player.ZoneCorrupt && player.ZoneRockLayerHeight)
@@ -59,12 +57,6 @@ namespace JEMusicAndPylon.Common
                 return Zone.CrimsonCavern;
             if (player.ZoneCrimson)
                 return Zone.Crimson;
-            if (player.ZoneDesert && player.ZoneDirtLayerHeight)
-                return Zone.DesertDirt;
-            if (player.ZoneDesert && player.ZoneRockLayerHeight || player.ZoneUndergroundDesert)
-                return Zone.DesertCavern;
-            if (player.ZoneDesert)
-                return Zone.Desert;
             if (player.ZoneSnow && player.ZoneDirtLayerHeight)
                 return Zone.SnowDirt;
             if (player.ZoneSnow && player.ZoneRockLayerHeight)
@@ -77,6 +69,14 @@ namespace JEMusicAndPylon.Common
                 return Zone.JungleCavern;
             if (player.ZoneJungle)
                 return Zone.Jungle;
+            if (player.ZoneDesert && player.ZoneDirtLayerHeight)
+                return Zone.DesertDirt;
+            if (player.ZoneDesert && player.ZoneRockLayerHeight || player.ZoneUndergroundDesert)
+                return Zone.DesertCavern;
+            if (player.ZoneDesert)
+                return Zone.Desert;
+            if (player.ZoneBeach)
+                return Zone.Ocean;
             if (player.ZoneDungeon)
                 return Zone.Dungeon;
             if (player.ZoneGlowshroom)

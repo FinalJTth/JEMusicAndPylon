@@ -28,7 +28,6 @@ namespace JEMusicAndPylon
 			Player localPlayer = Main.LocalPlayer;
 			Vector2 playerCoordinate = localPlayer.Center.ToTileCoordinates().ToVector2();
 			// Main.spriteBatch.DrawString(Main.fontMouseText, "Test", new Vector2(15f, Main.screenHeight - 120), Color.White);
-			Texture2D pylonTexture = ModContent.GetTexture("JEMusicAndPylon/Items/Placeables/ForestPylonIcon");
 			// Main.spriteBatch.Draw(pylonTexture, new Vector2(15f, Main.screenHeight - 140), Color.White);
 			// PlayerInput.SetZoom_Unscaled();
 
@@ -56,6 +55,7 @@ namespace JEMusicAndPylon
 
 			foreach (KeyValuePair<string, Vector2> kvp in JEMusicAndPylonWorld.Instance.PylonCoordinates)
 			{
+				Texture2D pylonTexture = ModContent.GetTexture("JEMusicAndPylon/Items/Placeables/" + kvp.Key + "Icon");
 				Vector2 pylonWorldCoordinate = kvp.Value.ToWorldCoordinates();
 				float x = dx + scale * pylonWorldCoordinate.X / Main.UIScale;
 				float y = dy + scale * pylonWorldCoordinate.Y / Main.UIScale;
