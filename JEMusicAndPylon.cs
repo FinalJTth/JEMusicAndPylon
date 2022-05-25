@@ -110,6 +110,9 @@ namespace JEMusicAndPylon
                 _stopTitleMusic = false;
                 _titleMusicStopped = new ManualResetEvent(initialState: false);
 
+                // Handle Services
+                new PylonHandler();
+
                 // Handle user interface
                 PylonMenuInterface = new UserInterface();
                 PylonMenuInterface.SetState(null);
@@ -152,6 +155,11 @@ namespace JEMusicAndPylon
             {
                 PylonMenuInterface?.Update(gameTime);
             }
+        }
+
+        public override void PostDrawFullscreenMap(ref string mouseText)
+        {
+            PylonHandler.Instance.PostDrawFullScreenMap();
         }
 
         private void SetMusicAndPriority(ref int music, ref MusicPriority priority)

@@ -61,5 +61,10 @@ namespace JEMusicAndPylon
 				}
             }
 		}
+
+		public void Teleport(Player player, Vector2 destination)
+		{
+			player.Teleport(new Vector2(Main.leftWorld + destination.X * 16, Main.topWorld + destination.Y * 16 - 32f));
+		}
 	}
 }

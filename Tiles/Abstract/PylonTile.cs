@@ -12,7 +12,7 @@ namespace JEMusicAndPylon.Tiles.Abstract
 {
     public abstract class PylonTile<MI, MT> : ModTile where MI : ModItem where MT : ModTile
     {
-        private string _biome = Utils.SplitCamelCase(typeof(MT).Name)[0];
+        private readonly string _biome = Utils.SplitCamelCase(typeof(MT).Name)[0];
         public override void SetDefaults()
         {
             Main.tileFrameImportant[Type] = true;
@@ -23,8 +23,8 @@ namespace JEMusicAndPylon.Tiles.Abstract
             TileObjectData.addTile(Type);
             disableSmartCursor = true;
             ModTranslation name = CreateMapEntryName(null);
-            name.SetDefault(typeof(MT).Name);
-            AddMapEntry(new Color(200, 200, 200), name);
+            name.SetDefault(_biome + " Pylon");
+            AddMapEntry(new Color(200, 180, 100));
         }
 
         public override void KillMultiTile(int i, int j, int frameX, int frameY)
@@ -42,10 +42,18 @@ namespace JEMusicAndPylon.Tiles.Abstract
             }
         }
 
+        public override bool CanPlace(int i, int j)
+        {
+            if (JEMusicAndPylonWorld.Instance.PylonCoordinates.ContainsKey(typeof(MT).Name))
+                return false;
+            return true;
+        }
+
         public override void PlaceInWorld(int i, int j, Item item)
         {
             JEMusicAndPylonWorld.Instance.PylonCoordinates.Add(typeof(MT).Name, new Vector2(i, j));
             Main.NewText(_biome + " Pylon has been placed at coordinate (" + i + ", " + j + ")");
+            Main.NewText("Test : " + ModContent.GetModItem(ModContent.ItemType<MI>()).Texture);
         }
 
         public override void MouseOver(int i, int j)
@@ -58,8 +66,11 @@ namespace JEMusicAndPylon.Tiles.Abstract
 
         public override bool NewRightClick(int i, int j)
         {
+            Main.playerInventory = false;
+            Main.mouseRightRelease = false;
+            Main.mapFullscreen = true;
             // Player player = Main.LocalPlayer;
-            JEMusicAndPylon.Instance.TogglePylonUI();
+            // JEMusicAndPylon.Instance.TogglePylonUI();
             /*
             Vector2 destination = JEMusicAndPylonWorld.Instance.PylonCoordinates["ForestPylon"];
             player.Teleport(new Vector2(Main.leftWorld + destination.X * 16, Main.topWorld + destination.Y * 16 - 32f));

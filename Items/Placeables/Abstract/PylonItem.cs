@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ModLoader;
 using Utils = JEMusicAndPylon.Common.Utils;
@@ -8,6 +9,11 @@ namespace JEMusicAndPylon.Items.Placeables.Abstract
 {
     public abstract class PylonItem<MI, MT> : ModItem where MI : ModItem where MT : ModTile
     {
+        public static Texture2D GetTexture()
+        {
+            return ModContent.GetTexture(ModContent.GetModItem(ModContent.ItemType<MI>()).Texture);
+        }
+
         public override void SetStaticDefaults()
         {
             string[] nameArray = Utils.SplitCamelCase(typeof(MI).Name);

@@ -35,7 +35,7 @@ namespace JEMusicAndPylon.UI
 				pylonTeleportButtonUI.Width.Set(60f, 0f);
 				pylonTeleportButtonUI.OnClick += delegate
 				{
-					Teleport(kvp.Value);
+					JEMusicAndPylonWorld.Instance.Teleport(Main.LocalPlayer, kvp.Value);
 				};
 
 				UIText pylonTeleportButtonTextUI = new UIText("Teleport");
@@ -45,13 +45,6 @@ namespace JEMusicAndPylon.UI
 				Append(pylonTeleportButtonUI);
 				counter++;
 			}
-		}
-
-		private void Teleport(Vector2 destination)
-        {
-			Player player = Main.LocalPlayer;
-			player.Teleport(new Vector2(Main.leftWorld + destination.X * 16, Main.topWorld + destination.Y * 16 - 32f));
-			JEMusicAndPylon.Instance.TogglePylonUI();
 		}
 	}
 }
