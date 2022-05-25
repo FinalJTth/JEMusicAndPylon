@@ -3,5 +3,5 @@ using Item = JEMusicAndPylon.Items.Placeables;
 
 namespace JEMusicAndPylon.Tiles
 {
-    public class ForestPylon : PylonTile<Item.ForestPylon, ForestPylon> { }
+    public class SnowPylon : PylonTile<Item.SnowPylon, SnowPylon> { }
 }

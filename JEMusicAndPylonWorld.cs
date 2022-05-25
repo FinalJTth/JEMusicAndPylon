@@ -10,22 +10,29 @@ namespace JEMusicAndPylon
 {
     public class JEMusicAndPylonWorld : ModPlayer
     {
-		private Dictionary<string, Vector2> pylonCoordinates = new Dictionary<string, Vector2>();
+		public static JEMusicAndPylonWorld Instance { get; set; }
+
+		private Dictionary<string, Vector2> _pylonCoordinates = new Dictionary<string, Vector2>();
 
 		public Dictionary<string, Vector2> PylonCoordinates
         {
-			get { return pylonCoordinates; }
-			set { pylonCoordinates = value; }
+			get { return _pylonCoordinates; }
+			set { _pylonCoordinates = value; }
         }
+
+		public JEMusicAndPylonWorld()
+		{
+			Instance = this;
+		}
 
 		public override TagCompound Save()
 		{
 			List<string> coordinateStringList = new List<string>();
-			foreach (KeyValuePair<string, Vector2> keyValuePair in pylonCoordinates)
+			foreach (KeyValuePair<string, Vector2> kvp in _pylonCoordinates)
 			{
-				string x = ((int)keyValuePair.Value.X).ToString();
-				string y = ((int)keyValuePair.Value.Y).ToString();
-				coordinateStringList.Add(keyValuePair.Key + ":" + x + ":" + y);
+				string x = ((int)kvp.Value.X).ToString();
+				string y = ((int)kvp.Value.Y).ToString();
+				coordinateStringList.Add(kvp.Key + ":" + x + ":" + y);
 			}
 			return new TagCompound
 			{
@@ -37,13 +44,19 @@ namespace JEMusicAndPylon
 		{
 			if (tag.ContainsKey("pylonCoordinates"))
             {
+				Main.NewText("Loading tag \"pylonCoordinates\" ...");
 				IList<string> coordinateStringList = tag.GetList<string>("pylonCoordinates");
-				foreach (string keyValueString in coordinateStringList)
+				foreach (string str in coordinateStringList)
                 {
-					string[] strArray = keyValueString.Split(':');
+					string[] strArray = str.Split(':');
 					if (strArray.Length == 3 && int.TryParse(strArray[1], out int resultX) && int.TryParse(strArray[2], out int resultY))
 					{
-						pylonCoordinates[strArray[0]] = new Vector2(resultX, resultY);
+						Main.NewText("Load pylon \"" + strArray[0] + "\"" + " with coordinate (" + resultX + ", " + resultY + ")");
+						_pylonCoordinates[strArray[0]] = new Vector2(resultX, resultY);
+					}
+					else
+                    {
+						Main.NewText("The coordinate was saved in an invalid format");
 					}
 				}
             }
