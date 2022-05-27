@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 using Utils = JEMusicAndPylon.Common.Utils;
 
@@ -44,6 +45,19 @@ namespace JEMusicAndPylon.Items.Placeables.Abstract
             {
                 Main.NewText(kvp.Key + " : " + "(" + kvp.Value.X + ", " + kvp.Value.Y + ")");
             }
+        }
+
+        public override void AddRecipes()
+        {
+            // Recipes here. See Basic Recipe Guide
+            ModRecipe recipe = new ModRecipe(mod);
+            if (Name == "UniversalPylon")
+                recipe.AddIngredient(ItemID.PlatinumCoin, 50);
+            else
+                recipe.AddIngredient(ItemID.PlatinumCoin, 5);
+            recipe.AddTile(TileID.WorkBenches);
+            recipe.SetResult(this);
+            recipe.AddRecipe();
         }
     }
 }

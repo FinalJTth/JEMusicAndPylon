@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using ILTerraria = IL.Terraria;
 using Terraria;
 using Terraria.ModLoader;
@@ -22,16 +23,13 @@ namespace JEMusicAndPylon
 
         internal static PylonMenu PylonMenu;
 
+        private readonly string _mainMenuSong = "Sounds/Music/Among_Us_Drip";
+
         public Music MainMenuMusic;
 
         private bool _stopTitleMusic;
         private int _customTitleMusicSlot;
         private ManualResetEvent _titleMusicStopped;
-
-        private Random _rand = new Random();
-        private double _randomDouble;
-
-        private string _mainMenuSong = "Sounds/Music/60_Alternate_Main_Menu";
 
         public JEMusicAndPylon()
         {
@@ -72,7 +70,13 @@ namespace JEMusicAndPylon
                 }
             }
         }
-
+        /*
+        public override void PostUpdateEverything()
+        {
+            Texture2D amogus = ModContent.GetTexture("JEMusicAndPylon/RedAmongus");
+            Main.spriteBatch.Draw(amogus, new Vector2(15f, Main.screenHeight - 600), amogus.Frame(), Color.White);
+        }
+        */
         public override void PostSetupContent()
         {
             SetTitleMusic();
@@ -132,6 +136,7 @@ namespace JEMusicAndPylon
             _titleMusicStopped?.Set();
             Instance = null;
             JEMusicAndPylonWorld.Instance = null;
+            PylonHandler.Instance = null;
             _titleMusicStopped = null;
 
             // Handle user interface
@@ -198,11 +203,17 @@ namespace JEMusicAndPylon
             List<int> nearbyNPCs = NPCUtils.FindNearbyNPCsByConditions(playerCoordinate, 0, 60, npcProperties);
 
             bool isTownZone = nearbyNPCs.Count > 1;
-            bool townMusicCriteria = playerZone == Zone.Forest || playerZone == Zone.Ocean || playerZone == Zone.Cavern;
+            bool townMusicCriteria = (playerZone == Zone.Forest || playerZone == Zone.Ocean || playerZone == Zone.Cavern) && !Main.raining;
+            bool highWindMusicCriteria = (playerZone == Zone.Forest || playerZone == Zone.Hallow) && !Main.raining;
 
             // Time condition music
             if (Main.dayTime)
             {
+                if (highWindMusicCriteria && Math.Abs(Main.windSpeed) > 0.8)
+                {
+                    music = GetSoundSlot(SoundType.Music, "Sounds/Music/44_Windy_Day");
+                    priority = MusicPriority.BiomeLow;
+                }
                 if (townMusicCriteria && isTownZone)
                 {
                     music = GetSoundSlot(SoundType.Music, "Sounds/Music/46_Town_Day");
@@ -218,7 +229,7 @@ namespace JEMusicAndPylon
                     priority = MusicPriority.BiomeLow;
                     return;
                 }
-                if (playerZone == Zone.Ocean)
+                if (playerZone == Zone.Ocean && !Main.raining)
                 {
                     music = GetSoundSlot(SoundType.Music, "Sounds/Music/43_Ocean_Night");
                     priority = MusicPriority.BiomeLow;

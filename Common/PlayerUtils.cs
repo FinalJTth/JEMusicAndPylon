@@ -113,7 +113,7 @@ namespace JEMusicAndPylon.Common
         {
             Player player = Main.player[Main.myPlayer];
             Zone playerZone = GetPlayerZone(player);
-            if (playerZone == Zone.Forest && Main.dayTime && Main.time >= 0 && Main.time <= 10800 && !Main.eclipse)
+            if (playerZone == Zone.Forest && Main.dayTime && Main.time >= 0 && Main.time <= 10800 && !Main.eclipse && Main.raining)
             {
                 return true;
             }

@@ -6,21 +6,28 @@ using Terraria.ModLoader.IO;
 using Terraria.DataStructures;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
-using Utils = JEMusicAndPylon.Common.Utils;
+using Terraria.ID;
+using Terraria.Localization;
+using NetUtils = JEMusicAndPylon.Common.NetUtils;
 using Microsoft.Xna.Framework.Graphics;
+using JEMusicAndPylon.Common;
+using Utils = JEMusicAndPylon.Common.Utils;
 
 namespace JEMusicAndPylon.Tiles.Abstract
 {
-    public abstract class PylonTile<MI, MT> : ModTile where MI : ModItem where MT : ModTile
+    public abstract class PylonTile<MI, MT, MTE> : ModTile where MI : ModItem where MT : ModTile where MTE : ModTileEntity
     {
         private readonly string _biome = Utils.SplitCamelCase(typeof(MT).Name)[0];
         private readonly int _animationFrame = 54;
+
         public override void SetDefaults()
         {
             Main.tileFrameImportant[Type] = true;
             TileObjectData.newTile.CopyFrom(TileObjectData.Style3x4);
             TileObjectData.newTile.Origin = new Point16(1, 3);
             TileObjectData.newTile.LavaDeath = false;
+            // Handle tile entity
+            TileObjectData.newTile.HookPostPlaceMyPlayer = new PlacementHook(ModContent.GetInstance<MTE>().Hook_AfterPlacement, -1, 0, true);
             // TileObjectData.newTile.DrawYOffset = 2;
             TileObjectData.addTile(Type);
             disableSmartCursor = true;
@@ -49,16 +56,28 @@ namespace JEMusicAndPylon.Tiles.Abstract
 
         public override void KillMultiTile(int i, int j, int frameX, int frameY)
         {
+            // Give item back
             Item.NewItem(i * 16, j * 16, 16, 48, ModContent.ItemType<MI>(), 1, false, 0, false, false);
-            if (JEMusicAndPylonWorld.Instance.PylonCoordinates.ContainsKey(typeof(MT).Name))
+            // Kill tile entity
+            Point16 origin = TileUtils.GetTileOrigin(i, j);
+            ModContent.GetInstance<MTE>().Kill(origin.X, origin.Y);
+            // Handle Pylon world data on single player
+            if (Main.netMode == NetmodeID.SinglePlayer)
             {
-                Vector2 coordinate = JEMusicAndPylonWorld.Instance.PylonCoordinates[typeof(MT).Name];
-                JEMusicAndPylonWorld.Instance.PylonCoordinates.Remove(typeof(MT).Name);
-                Main.NewText(_biome + " Pylon has been removed at coordinate (" + coordinate.X + ", " + coordinate.Y + ")");
-            }
-            else
-            {
-                Main.NewText(_biome + " Pylon at coordinate (" + i + ", " + j + ") has been removed but wasn't registered");
+                if (JEMusicAndPylonWorld.Instance.PylonCoordinates.ContainsKey(typeof(MT).Name))
+                {
+                    Vector2 coordinate = JEMusicAndPylonWorld.Instance.PylonCoordinates[typeof(MT).Name];
+                    JEMusicAndPylonWorld.Instance.PylonCoordinates.Remove(typeof(MT).Name);
+                    Main.NewText(_biome + " Pylon has been removed at coordinate (" + coordinate.X + ", " + coordinate.Y + ")");
+                    if (Main.netMode == NetmodeID.MultiplayerClient)
+                    {
+                        NetMessage.SendData(MessageID.WorldData);
+                    }
+                }
+                else
+                {
+                    Main.NewText(_biome + " Pylon at coordinate (" + i + ", " + j + ") has been removed but wasn't registered");
+                }
             }
         }
 
@@ -71,9 +90,17 @@ namespace JEMusicAndPylon.Tiles.Abstract
 
         public override void PlaceInWorld(int i, int j, Item item)
         {
-            JEMusicAndPylonWorld.Instance.PylonCoordinates.Add(typeof(MT).Name, new Vector2(i, j));
-            Main.NewText(_biome + " Pylon has been placed at coordinate (" + i + ", " + j + ")");
-            Main.NewText("Test : " + ModContent.GetModItem(ModContent.ItemType<MI>()).Texture);
+            // Main.NewText(_biome + " Pylon has been placed at coordinate (" + i + ", " + j + ")");
+            // Handle Pylon world data on single player
+            if (Main.netMode == NetmodeID.SinglePlayer)
+            {
+                JEMusicAndPylonWorld.Instance.PylonCoordinates.Add(typeof(MT).Name, new Vector2(i, j));
+                Main.NewText(_biome + " Pylon has been placed at coordinate (" + i + ", " + j + ")");
+                // NetMessage.SendData(MessageID.WorldData);
+                // NetMessage.SendData(MessageID.WorldData, 1, -1, NetworkText.FromLiteral("[Server] " + _biome + " Pylon has been placed at coordinate (" + i + ", " + j + ")"));
+            }
+            // NetMessage.BroadcastChatMessage(NetworkText.FromLiteral("[Server] " + _biome + " Pylon has been placed at coordinate (" + i + ", " + j + ")"), Color.White);
+            // Main.NewText(_biome + " Pylon has been placed at coordinate (" + i + ", " + j + ")");
         }
 
         public override void MouseOver(int i, int j)

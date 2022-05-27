@@ -1,1 +1,2 @@
-Journey's End Music and Pylon is a pretty cool mod, it does...this. Modify this file with a description of your mod.
+Journey's End Music and Pylon add several Journet's end update (1.4) music to the game including the pylon system for rapid transportation.
+This means that the pylons will work almost exactly the same as the base game. Have fun setting NPC house by the way.
