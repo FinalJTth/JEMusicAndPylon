@@ -18,12 +18,11 @@ namespace JEMusicAndPylon
     public class JEMusicAndPylon : Mod
     {
         public static JEMusicAndPylon Instance { get; private set; }
-
         private static UserInterface PylonMenuInterface;
 
         internal static PylonMenu PylonMenu;
 
-        private readonly string _mainMenuSong = "Sounds/Music/Among_Us_Drip";
+        private readonly string _mainMenuSong = "Sounds/Music/60_Alternate_Main_Menu";
 
         public Music MainMenuMusic;
 
